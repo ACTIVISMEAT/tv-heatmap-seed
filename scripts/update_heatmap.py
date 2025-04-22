@@ -16,14 +16,16 @@ CSV_PATH = "data/BTC_LIQ_HM.csv"
 
 # 2 )  DESCARGA LIQUIDACIONES -------------------------------------------------
 def fetch_liq():
-    now  = int(time.time())
-    frm  = now - 60*60*24*30
+    now = int(time.time())
+    frm = now - 60*60*24*30
     resp = requests.get(
         f"{BASE_URL}/liquidation-history",
-        params={"symbols": SYMBOL,
-                "interval": INTERVAL,
-                "from": frm,
-                "to":   now},
+        params={
+            "symbols":  SYMBOL,
+            "interval": INTERVAL,
+            "from":     frm,
+            "to":       now
+        },
         headers={"api_key": API_KEY},
         timeout=15
     )
@@ -32,16 +34,18 @@ def fetch_liq():
     df   = pd.DataFrame(rows)
     df["t"] = pd.to_datetime(df["t"], unit="s", utc=True)
 
-    # —— AQUÍ la parte nueva ——
-    # Si el JSON trae 'v' (valor) o 'liqValue', usamos ese mismo número
-    # para las 4 columnas OHLC que Pine Seeds exige.
-    col_val = "v" if "v" in df.columns else "liqValue"
-    df["open"]  = df[col_val]
-    df["high"]  = df[col_val]
-    df["low"]   = df[col_val]
-    df["close"] = df[col_val]
+    # ── NUEVO: detectar la primera columna numérica disponible ──
+    value_cols = [c for c in df.columns if c not in ("t",) and pd.api.types.is_numeric_dtype(df[c])]
+    if not value_cols:
+        raise ValueError("No numeric column found in API response")
+    base = value_cols[0]        # ej. 'v', 'value', 'sum', etc.
+
+    # Rellenamos OHLC duplicando el valor
+    for col in ("open", "high", "low", "close"):
+        df[col] = df[base]
 
     return df[["t", "open", "high", "low", "close"]]
+
 
 
 # 3 )  ESCRIBE EN FORMATO PINE SEEDS -----------------------------------------
