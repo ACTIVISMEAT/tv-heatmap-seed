@@ -8,7 +8,7 @@ import os, time, requests, pandas as pd
 from datetime import datetime
 
 # 1 )  VARIABLES DE ENTORNO ---------------------------------------------------
-API_KEY  = os.getenv("35019fde-cedd-4322-8137-c63d2357dfbe")           # la guardarás en Settings ▸ Secrets
+API_KEY  = os.getenv("CZ_API_KEY")           # la guardarás en Settings ▸ Secrets
 SYMBOL   = "BTCUSDT_PERP.A"                  # perp de Binance agregado
 INTERVAL = "daily"                           # '12hour', '6hour', etc. si deseas
 BASE_URL = "https://api.coinalyze.net/v1"
