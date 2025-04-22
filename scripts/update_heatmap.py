@@ -44,6 +44,10 @@ def fetch_liq():
     for col in ("open", "high", "low", "close"):
         df[col] = df[base]
 
+    print("Columns:", df.columns.tolist())
+    print(df.head().to_string())
+
+
     return df[["t", "open", "high", "low", "close"]]
 
 
