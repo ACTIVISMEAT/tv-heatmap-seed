@@ -1,4 +1,6 @@
 name: Refresh heat‑map
+permissions:
+  contents: write   
 on:
   workflow_dispatch:        # ← NUEVA línea: habilita “Run workflow”
   schedule:
