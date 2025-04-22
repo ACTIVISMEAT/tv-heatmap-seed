@@ -1,0 +1,19 @@
+name: Refresh heat‑map
+on:
+  schedule:
+    - cron:  '0 */6 * * *'        # 4 veces al día (00‑06‑12‑18 UTC)
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    env:
+      CZ_API_KEY: ${{ secrets.CZ_API_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - run: pip install requests pandas
+      - run: python scripts/update_heatmap.py
+      - run: |
+          git config user.name  "TV‑Bot"
+          git config user.email "bot@example.com"
+          git add data/*.csv
+          git commit -m "auto‑update $(date -u +'%F %T')" || exit 0
+          git push
